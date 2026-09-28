@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSubmit - Pengumpulan Tugas & Penilaian Antar Teman</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sheet-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+        .sheet-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+        .sheet-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .sheet-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-sky-500 selection:text-white">
+
+    <!-- Navbar Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="goToStep('welcome')">
+                    <div class="bg-gradient-to-tr from-sky-600 to-indigo-600 p-2.5 rounded-xl text-white shadow-md shadow-sky-500/20">
+                        <i data-lucide="folder-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-xl text-slate-900 tracking-tight flex items-center gap-2">
+                            EduSubmit <span class="bg-sky-100 text-sky-700 text-xs px-2 py-0.5 rounded-full font-semibold">Spreadsheet Sync</span>
+                        </span>
+                        <p class="text-[11px] text-slate-500 hidden sm:block">Portal Pengumpulan Tugas & Penilaian Antar Teman</p>
+                    </div>
+                </div>
+
+                <!-- Right Header Navigation -->
+                <nav class="flex items-center gap-2">
+                    <button id="nav-btn-student" onclick="goToStep('welcome')" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-sky-50 text-sky-700 border border-sky-200">
+                        <i data-lucide="user-check" class="w-4 h-4"></i>
+                        <span>Mode Siswa</span>
+                    </button>
+                    <button id="nav-btn-sheet" onclick="switchTab('sheet')" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-1.5">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Spreadsheet & Guru</span>
+                        <span id="badge-count" class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.2 rounded-full font-bold">0</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- WELCOME SECTION -->
+        <section id="step-welcome" class="block">
+            <div class="max-w-3xl mx-auto text-center space-y-6 py-4">
+                
+                <div class="inline-flex items-center gap-2 bg-sky-50 border border-sky-200 text-sky-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 animate-pulse"></i>
+                    <span>Portal Pengumpulan & Penilaian Antar Teman</span>
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Penilaian Antar Teman <br class="hidden sm:inline"> & Pengumpulan Tugas <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-indigo-600">Spreadsheet</span>
+                </h1>
+
+                <!-- Visual Banner Card -->
+                <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-2xl relative overflow-hidden border border-slate-800 text-left">
+                    <div class="relative z-10 space-y-4">
+                        <div class="bg-gradient-to-r from-sky-500/20 to-indigo-500/20 backdrop-blur border border-sky-400/30 p-4 rounded-2xl">
+                            <p class="text-sky-200 text-xs sm:text-sm font-semibold leading-relaxed flex items-start gap-2">
+                                <i data-lucide="heart-handshake" class="w-5 h-5 text-sky-400 shrink-0 mt-0.5"></i>
+                                <span><strong>Selamat Datang di Penilaian Antar Teman.</strong> Berikan penilaian secara jujur dan objektif untuk mendukung perkembangan bersama. Tetap semangat! 🔥</span>
+                            </p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                            <div class="bg-white/10 backdrop-blur p-3.5 rounded-xl border border-white/10 text-xs space-y-1">
+                                <div class="font-bold text-sky-400 flex items-center gap-1.5">
+                                    <span class="w-5 h-5 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center font-extrabold text-[10px]">1</span>
+                                    <span>Pilih Kelas & Nama</span>
+                                </div>
+                                <p class="text-slate-400 text-[11px]">Pilih kelas terlebih dahulu, lalu pilih nama murid yang terdaftar di kelas tersebut.</p>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur p-3.5 rounded-xl border border-white/10 text-xs space-y-1">
+                                <div class="font-bold text-emerald-400 flex items-center gap-1.5">
+                                    <span class="w-5 h-5 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center font-extrabold text-[10px]">2</span>
+                                    <span>Pilih Materi Tugas</span>
+                                </div>
+                                <p class="text-slate-400 text-[11px]">Pilih satu atau beberapa materi tugas yang akan dikumpulkan/dinilai.</p>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur p-3.5 rounded-xl border border-white/10 text-xs space-y-1">
+                                <div class="font-bold text-amber-400 flex items-center gap-1.5">
+                                    <span class="w-5 h-5 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-extrabold text-[10px]">3</span>
+                                    <span>Unggah & Rubrik (1-4)</span>
+                                </div>
+                                <p class="text-slate-400 text-[11px]">Unggah foto/video & isi penilaian mandiri skala 1 (Perlu Bimbingan) s/d 4 (Sangat Baik).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Start Button -->
+                <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button onclick="goToStep('identity')" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white text-base font-bold rounded-2xl shadow-xl shadow-sky-500/25 hover:shadow-sky-500/40 transition-all flex items-center justify-center gap-3 transform hover:-translate-y-0.5">
+                        <span>Mulai Pengumpulan Tugas</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- STEP 1: IDENTITY FORM (CASCADING CLASS -> STUDENT NAME) -->
+        <section id="step-identity" class="hidden max-w-xl mx-auto">
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+                <!-- Header -->
+                <div class="bg-slate-900 text-white p-6 relative">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-sky-500 text-slate-950 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full">Langkah 1 dari 2</span>
+                        <button onclick="goToStep('welcome')" class="text-slate-400 hover:text-white text-xs flex items-center gap-1">
+                            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Kembali
+                        </button>
+                    </div>
+                    <h2 class="text-xl font-bold">Pilih Kelas & Identitas Murid</h2>
+                    <p class="text-slate-400 text-xs mt-1">Pilih kelas terlebih dahulu untuk melihat daftar nama murid yang sesuai.</p>
+                </div>
+
+                <!-- Form -->
+                <form id="identity-form" onsubmit="handleIdentitySubmit(event)" class="p-6 space-y-4">
+                    
+                    <!-- 1. CASCADING STEP 1: SELECT CLASS -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1.5">
+                        <label class="block text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="users" class="w-4 h-4 text-sky-600"></i>
+                            <span>1. Pilih Kelas / Rombel Terlebih Dahulu <span class="text-red-500">*</span></span>
+                        </label>
+                        <select id="id-class" required onchange="onClassChange()" class="w-full px-3.5 py-3 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none transition-all font-medium">
+                            <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
+                            <option value="Kelas 10-A">Kelas 10-A</option>
+                            <option value="Kelas 10-B">Kelas 10-B</option>
+                            <option value="Kelas 11-IPA 1">Kelas 11-IPA 1</option>
+                            <option value="Kelas 12-IPS 2">Kelas 12-IPS 2</option>
+                            <option value="Mahasiswa Reguler">Mahasiswa Reguler</option>
+                        </select>
+                    </div>
+
+                    <!-- 2. CASCADING STEP 2: SELECT STUDENT FROM CLASS -->
+                    <div class="bg-sky-50/80 p-4 rounded-2xl border border-sky-200 space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-extrabold text-sky-900 uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="user-check" class="w-4 h-4 text-sky-600"></i>
+                                <span>2. Pilih Nama Murid (Dari Kelas Terpilih) <span class="text-red-500">*</span></span>
+                            </label>
+                            <span id="student-count-badge" class="bg-sky-200 text-sky-800 text-[10px] px-2 py-0.5 rounded-full font-bold">0 Murid</span>
+                        </div>
+                        <select id="student-select" onchange="autoFillStudentData()" disabled class="w-full px-3.5 py-3 text-xs font-semibold bg-white border border-sky-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">-- Silakan Pilih Kelas Di Atas Terlebih Dahulu --</option>
+                        </select>
+                    </div>
+
+                    <!-- MANUAL OVERRIDE / VERIFICATION FIELDS -->
+                    <div class="space-y-3 pt-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nama Lengkap Murid <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <i data-lucide="user" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                                <input type="text" id="id-name" required placeholder="Nama lengkap murid" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white focus:outline-none transition-all">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">NIM / NISN / No. ID <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="id-card" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                                    <input type="text" id="id-number" required placeholder="Nomor NISN/ID" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white focus:outline-none transition-all">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nomor Absen</label>
+                                <input type="number" id="id-absen" min="1" placeholder="Contoh: 08" class="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white focus:outline-none transition-all">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-sky-500/20 transition-all flex items-center justify-center gap-2">
+                            <span>Lanjut Pilih Materi & Penilaian</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- STEP 2: TASK SELECTION & DYNAMIC PER-TASK UPLOAD + RUBRIC FORM -->
+        <section id="step-task" class="hidden max-w-3xl mx-auto space-y-6">
+            
+            <!-- Student Banner Summary -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-sky-100 text-sky-700 rounded-xl flex items-center justify-center font-bold text-sm">
+                        <i data-lucide="user-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] text-slate-400 font-medium">Identitas Murid Yang Dinilai:</p>
+                        <h3 id="display-student-name" class="font-bold text-slate-800 text-sm">Budi Santoso</h3>
+                        <p id="display-student-info" class="text-xs text-slate-500">NIM: 20231002 | Kelas 10-A</p>
+                    </div>
+                </div>
+                <button onclick="goToStep('identity')" class="text-xs text-sky-600 hover:text-sky-800 font-semibold border border-sky-200 px-3 py-1.5 rounded-lg bg-sky-50 self-start sm:self-auto flex items-center gap-1">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Ubah Kelas/Murid
+                </button>
+            </div>
+
+            <!-- Task Main Form Container -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-sky-600 via-sky-700 to-indigo-700 text-white p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-white/20 backdrop-blur text-white text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full">Langkah 2 dari 2</span>
+                        <span id="active-tasks-count-badge" class="text-xs bg-emerald-500 text-white font-bold px-2.5 py-0.5 rounded-full">5 Materi Tersedia</span>
+                    </div>
+                    <h2 class="text-2xl font-bold">Pilih Materi & Isi Formulir Penilaian</h2>
+                    <p class="text-sky-100 text-xs mt-1">Centang satu atau lebih materi. Untuk setiap materi yang dipilih, unggah dokumentasi foto/video dan isi formulir penilaian mandiri.</p>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    
+                    <!-- TASK SELECTION CHECKBOXES -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                Pilih Materi / Tugas Yang Dinilai <span class="text-red-500">* (Bisa Pilih > 1)</span>
+                            </label>
+                            <span id="selected-tasks-count" class="text-xs text-sky-700 font-extrabold bg-sky-100 px-2.5 py-0.5 rounded-full">1 Materi Dipilih</span>
+                        </div>
+
+                        <!-- Checkboxes list -->
+                        <div id="tasks-checkboxes-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-60 overflow-y-auto p-1.5 border border-slate-200 rounded-2xl bg-slate-50">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-100">
+
+                    <!-- MOTIVATIONAL BANNER -->
+                    <div class="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-sky-500/10 border border-emerald-300/40 p-3.5 rounded-2xl flex items-center gap-3">
+                        <div class="p-2 bg-emerald-500 text-white rounded-xl shrink-0">
+                            <i data-lucide="sparkles" class="w-5 h-5 animate-spin" style="animation-duration: 4s;"></i>
+                        </div>
+                        <div class="text-xs">
+                            <p class="font-extrabold text-emerald-900">Tetap Semangat & Berikan Penilaian Terbaik! 🔥</p>
+                            <p class="text-emerald-700 text-[11px] mt-0.5">Skala Rubrik: <strong>1: Perlu Bimbingan</strong> | <strong>2: Mulai Berkembang</strong> | <strong>3: Baik</strong> | <strong>4: Sangat Baik</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- DYNAMIC CONTAINERS FOR EACH SELECTED TASK -->
+                    <div id="dynamic-task-forms-container" class="space-y-6">
+                        <!-- Injected via JS dynamically depending on checked tasks -->
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button type="button" onclick="submitAllAssignments()" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-base rounded-2xl shadow-xl shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+                            <i data-lucide="send" class="w-5 h-5"></i>
+                            <span>Kirimkan Semua Tugas Ke Spreadsheet</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SPREADSHEET & GURU DASHBOARD SECTION -->
+        <section id="section-sheet" class="hidden space-y-6">
+            
+            <!-- Summary Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-sky-100 text-sky-600 rounded-xl">
+                        <i data-lucide="layers" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">Total Tugas Masuk</p>
+                        <h3 id="stat-total" class="text-2xl font-bold text-slate-800">0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                        <i data-lucide="image" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">Dokumentasi Foto</p>
+                        <h3 id="stat-photos" class="text-2xl font-bold text-slate-800">0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
+                        <i data-lucide="video" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">Dokumentasi Video</p>
+                        <h3 id="stat-videos" class="text-2xl font-bold text-slate-800">0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                        <i data-lucide="list-checks" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">Tugas Aktif</p>
+                        <h3 id="stat-active-tasks" class="text-2xl font-bold text-slate-800">5</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spreadsheet Toolbar -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-emerald-500 p-2.5 text-white rounded-xl shadow-sm">
+                            <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-slate-900 text-lg">Spreadsheet Rekap Tugas & Penilaian Antar Teman</h2>
+                            <p class="text-xs text-slate-500">Berikan penilaian secara jujur dan objektif untuk mendukung perkembangan bersama. Tetap semangat! 🔥</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="toggleTaskManagerModal()" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
+                            <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                            <span>Kelola Materi & Murid</span>
+                        </button>
+                        <button onclick="toggleWebhookModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-all">
+                            <i data-lucide="link" class="w-4 h-4 text-sky-600"></i>
+                            <span>Webhook Google Sheets</span>
+                        </button>
+                        <button onclick="loadSampleData()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-all">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+                            <span>Isi Data Sampel</span>
+                        </button>
+                        <button onclick="exportToCSV()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Unduh (.CSV)</span>
+                        </button>
+                        <button onclick="clearAllData()" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-all" title="Bersihkan Data">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-400"></i>
+                        <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Cari Siswa, NIM, Tugas..." class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                    <div>
+                        <select id="filter-class" onchange="filterTable()" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <option value="ALL">Semua Kelas</option>
+                            <option value="Kelas 10-A">Kelas 10-A</option>
+                            <option value="Kelas 10-B">Kelas 10-B</option>
+                            <option value="Kelas 11-IPA 1">Kelas 11-IPA 1</option>
+                            <option value="Kelas 12-IPS 2">Kelas 12-IPS 2</option>
+                            <option value="Mahasiswa Reguler">Mahasiswa Reguler</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="filter-media" onchange="filterTable()" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <option value="ALL">Semua Tipe Media</option>
+                            <option value="photo">Hanya Foto</option>
+                            <option value="video">Hanya Video</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spreadsheet Grid Table -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto sheet-scroll max-h-[500px]">
+                    <table class="w-full text-left border-collapse min-w-[1000px]">
+                        <thead>
+                            <tr class="bg-slate-100 border-b border-slate-200 text-slate-600 text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10">
+                                <th class="py-3 px-4 w-12 text-center">No</th>
+                                <th class="py-3 px-4">Waktu Kirim</th>
+                                <th class="py-3 px-4">Identitas Siswa</th>
+                                <th class="py-3 px-4">Nama Tugas / Materi</th>
+                                <th class="py-3 px-4 text-center">Tipe Media</th>
+                                <th class="py-3 px-4 text-center">Pratinjau</th>
+                                <th class="py-3 px-4 text-center">Penilaian (1-4)</th>
+                                <th class="py-3 px-4">Catatan Siswa</th>
+                                <th class="py-3 px-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sheet-tbody" class="divide-y divide-slate-100 text-xs">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty state -->
+                <div id="empty-state" class="py-12 text-center hidden">
+                    <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                        <i data-lucide="inbox" class="w-6 h-6"></i>
+                    </div>
+                    <p class="font-bold text-slate-700 text-sm">Belum Ada Data Tugas</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Siswa belum mengunggah tugas atau tidak ada data yang cocok dengan pencarian.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- TASK & STUDENT MANAGER MODAL -->
+    <div id="task-manager-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl border border-slate-200">
+            <div class="bg-slate-900 text-white p-5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="database" class="w-5 h-5 text-sky-400"></i>
+                    <h3 class="font-bold text-base">Kelola Spreadsheet (Materi & Murid)</h3>
+                </div>
+                <button onclick="toggleTaskManagerModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="flex border-b border-slate-200 bg-slate-100 text-xs font-bold">
+                <button id="tab-btn-tasks" onclick="switchManagerTab('tasks')" class="flex-1 py-3 text-center border-b-2 border-sky-600 text-sky-700 bg-white">
+                    📚 Daftar Materi / Tugas (<span id="count-mgr-tasks">5</span>)
+                </button>
+                <button id="tab-btn-students" onclick="switchManagerTab('students')" class="flex-1 py-3 text-center text-slate-500 hover:text-slate-800">
+                    👨‍🎓 Daftar Murid Database (<span id="count-mgr-students">5</span>)
+                </button>
+            </div>
+
+            <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                <!-- Tab Tasks -->
+                <div id="manager-tab-tasks" class="space-y-4">
+                    <p class="text-xs text-slate-500">Materi/tugas ini akan muncul sebagai opsi centang pada form pengumpulan tugas.</p>
+                    
+                    <!-- Add New Task Form -->
+                    <div class="bg-sky-50 p-4 rounded-2xl border border-sky-200 space-y-3">
+                        <h4 class="font-bold text-sky-900 text-xs flex items-center gap-1.5">
+                            <i data-lucide="plus-circle" class="w-4 h-4 text-sky-600"></i>
+                            <span>Tambah Materi / Tugas Baru</span>
+                        </h4>
+                        <div class="space-y-2 text-xs">
+                            <input type="text" id="new-task-title" placeholder="Judul Tugas/Materi (misal: Tugas 6 - Praktikum Bio)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl">
+                            <input type="text" id="new-task-subject" placeholder="Mata Pelajaran (misal: Biologi)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl">
+                            <textarea id="new-task-desc" placeholder="Instruksi pengerjaan singkat..." rows="2" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl"></textarea>
+                            <button onclick="addNewTaskToSpreadsheet()" class="w-full py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs transition-all">
+                                + Tambahkan Materi
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div id="tasks-list-container" class="space-y-2">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Students -->
+                <div id="manager-tab-students" class="hidden space-y-4">
+                    <p class="text-xs text-slate-500">Daftar murid ini menjadi opsi pilihan otomatis setelah memilih kelas pada portal murid.</p>
+
+                    <!-- Add New Student Form -->
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 space-y-3">
+                        <h4 class="font-bold text-emerald-900 text-xs flex items-center gap-1.5">
+                            <i data-lucide="user-plus" class="w-4 h-4 text-emerald-600"></i>
+                            <span>Tambah Murid Baru Ke Spreadsheet</span>
+                        </h4>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <input type="text" id="new-std-name" placeholder="Nama Lengkap Murid" class="col-span-2 px-3 py-2 bg-white border border-slate-300 rounded-xl">
+                            <input type="text" id="new-std-number" placeholder="NIM / NISN" class="px-3 py-2 bg-white border border-slate-300 rounded-xl">
+                            <input type="text" id="new-std-absen" placeholder="No. Absen" class="px-3 py-2 bg-white border border-slate-300 rounded-xl">
+                            <select id="new-std-class" class="col-span-2 px-3 py-2 bg-white border border-slate-300 rounded-xl">
+                                <option value="Kelas 10-A">Kelas 10-A</option>
+                                <option value="Kelas 10-B">Kelas 10-B</option>
+                                <option value="Kelas 11-IPA 1">Kelas 11-IPA 1</option>
+                                <option value="Kelas 12-IPS 2">Kelas 12-IPS 2</option>
+                                <option value="Mahasiswa Reguler">Mahasiswa Reguler</option>
+                            </select>
+                            <button onclick="addNewStudentToSpreadsheet()" class="col-span-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all">
+                                + Tambahkan Murid
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div id="students-list-container" class="space-y-2 max-h-52 overflow-y-auto">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WEBHOOK SETTINGS MODAL -->
+    <div id="webhook-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200">
+            <div class="bg-slate-900 text-white p-5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="link" class="w-5 h-5 text-sky-400"></i>
+                    <h3 class="font-bold text-base">Pengaturan Webhook Google Sheets</h3>
+                </div>
+                <button onclick="toggleWebhookModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Masukkan URL Web App dari Google Apps Script untuk mengirimkan data pengumpulan tugas secara otomatis ke Google Sheets.
+                </p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">URL Google Apps Script / Webhook</label>
+                    <input type="url" id="webhook-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button onclick="toggleWebhookModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all">
+                        Batal
+                    </button>
+                    <button onclick="saveWebhookUrl()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Simpan Webhook</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEDIA PREVIEW MODAL -->
+    <div id="media-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-200">
+            <div class="bg-slate-900 text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span id="modal-type-badge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-sky-500">Foto</span>
+                    <h3 id="modal-title" class="font-bold text-sm truncate max-w-md">Detail Tugas</h3>
+                </div>
+                <button onclick="closeMediaModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Media Box -->
+            <div class="p-4 bg-slate-950 flex items-center justify-center min-h-[250px] max-h-[380px]">
+                <div id="modal-media-content" class="w-full flex items-center justify-center"></div>
+            </div>
+
+            <div class="p-5 space-y-3 text-xs bg-white">
+                <div class="grid grid-cols-2 gap-3 border-b border-slate-100 pb-3">
+                    <div>
+                        <p class="text-slate-400 font-medium">Siswa / NIM:</p>
+                        <p id="modal-student-info" class="font-bold text-slate-800">Budi Santoso (20231002)</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 font-medium">Rincian Penilaian (1-4):</p>
+                        <p id="modal-scores-info" class="font-bold text-emerald-600">K1:4 | K2:4 | K3:4 | K4:4 (Rata-rata: 4.0)</p>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-slate-400 font-medium">Catatan / Masukan Siswa:</p>
+                    <p id="modal-notes-info" class="text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200 mt-1 italic">"-"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // Default Rubric Criteria Text & Definition (1-4)
+        const RUBRIC_SCALE_LABELS = {
+            1: '1: Perlu Bimbingan',
+            2: '2: Mulai Berkembang',
+            3: '3: Baik',
+            4: '4: Sangat Baik'
+        };
+
+        // Default Tasks in Spreadsheet
+        let spreadsheetTasks = [
+            {
+                id: 'TSK-1',
+                title: 'Tugas 1 - Foto Observasi Lapangan',
+                subject: 'Geografi & Lingkungan',
+                description: 'Unggah foto dokumentasi observasi ekosistem sekitar rumah beserta deskripsi singkat.'
+            },
+            {
+                id: 'TSK-2',
+                title: 'Tugas 2 - Video Demonstrasi Eksperimen Fisika',
+                subject: 'Fisika Dasar',
+                description: 'Rekam video eksperimen hukum Newton berdurasi 1-3 menit.'
+            },
+            {
+                id: 'TSK-3',
+                title: 'Tugas 3 - Poster Desain Grafis Kampanye',
+                subject: 'Desain Komunikasi Visual',
+                description: 'Unggah file gambar poster bertema literasi digital.'
+            },
+            {
+                id: 'TSK-4',
+                title: 'Tugas 4 - Video Presentasi Teks LHO',
+                subject: 'Bahasa Indonesia',
+                description: 'Video rekaman presentasi hasil analisis teks Laporan Hasil Observasi.'
+            },
+            {
+                id: 'TSK-5',
+                title: 'Tugas 5 - Foto Dokumentasi Karya Seni Rupa',
+                subject: 'Seni Budaya',
+                description: 'Foto hasil karya sketsa atau lukisan perspektif 3D.'
+            }
+        ];
+
+        // Pre-defined Student Roster Linked to Classes
+        let spreadsheetStudents = [
+            { id: 'STD-1', name: 'Ahmad Rizky', number: '20231001', className: 'Kelas 10-A', absen: '01' },
+            { id: 'STD-2', name: 'Budi Santoso', number: '20231002', className: 'Kelas 10-A', absen: '02' },
+            { id: 'STD-3', name: 'Clara Sinta', number: '20231003', className: 'Kelas 10-A', absen: '03' },
+            { id: 'STD-4', name: 'Dewi Anggraini', number: '20231004', className: 'Kelas 10-B', absen: '01' },
+            { id: 'STD-5', name: 'Eko Prasetyo', number: '20231005', className: 'Kelas 10-B', absen: '02' },
+            { id: 'STD-6', name: 'Siti Nurhaliza', number: '20231101', className: 'Kelas 11-IPA 1', absen: '14' },
+            { id: 'STD-7', name: 'Farhan Maulana', number: '20231102', className: 'Kelas 11-IPA 1', absen: '15' },
+            { id: 'STD-8', name: 'Rian Hidayat', number: '20231201', className: 'Kelas 12-IPS 2', absen: '20' },
+            { id: 'STD-9', name: 'Gita Gutawa', number: '20239901', className: 'Mahasiswa Reguler', absen: '05' }
+        ];
+
+        // Array of checked Task IDs
+        let selectedTaskIds = ['TSK-1'];
+
+        // Task Form State Data per selected Task ID
+        // Structure: taskFormData[taskId] = { mediaType: 'photo'|'video', file: null, scores: {1:4, 2:4, 3:4, 4:4}, notes: '' }
+        let taskFormData = {};
+
+        // Student Identity State
+        let currentStudent = {
+            name: '',
+            number: '',
+            className: '',
+            absen: ''
+        };
+
+        // Submissions List stored in LocalStorage
+        let submissions = [];
+
+        // App Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadStoredTasks();
+            loadStoredStudents();
+            loadStoredSubmissions();
+            loadStoredWebhookUrl();
+            populateTaskCheckboxes();
+            renderDynamicTaskForms();
+            renderSpreadsheet();
+            updateStats();
+        });
+
+        // Navigation Switcher
+        function goToStep(step) {
+            document.getElementById('step-welcome').classList.add('hidden');
+            document.getElementById('step-identity').classList.add('hidden');
+            document.getElementById('step-task').classList.add('hidden');
+            document.getElementById('section-sheet').classList.add('hidden');
+
+            document.getElementById('nav-btn-student').className = 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-sky-50 text-sky-700 border border-sky-200';
+            document.getElementById('nav-btn-sheet').className = 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-1.5';
+
+            if (step === 'welcome') {
+                document.getElementById('step-welcome').classList.remove('hidden');
+            } else if (step === 'identity') {
+                document.getElementById('step-identity').classList.remove('hidden');
+            } else if (step === 'task') {
+                document.getElementById('step-task').classList.remove('hidden');
+            }
+        }
+
+        /* ----------------------------------------------------
+           1. CASCADING CLASS & STUDENT SELECTION LOGIC
+           ---------------------------------------------------- */
+        function onClassChange() {
+            const selectedClass = document.getElementById('id-class').value;
+            const studentSelect = document.getElementById('student-select');
+            
+            // Clear identity input fields
+            document.getElementById('id-name').value = '';
+            document.getElementById('id-number').value = '';
+            document.getElementById('id-absen').value = '';
+
+            if (!selectedClass) {
+                studentSelect.disabled = true;
+                studentSelect.innerHTML = '<option value="">-- Silakan Pilih Kelas Di Atas Terlebih Dahulu --</option>';
+                document.getElementById('student-count-badge').innerText = '0 Murid';
+                return;
+            }
+
+            // Filter students by chosen class
+            const filteredStudents = spreadsheetStudents.filter(std => std.className === selectedClass);
+            
+            studentSelect.disabled = false;
+            studentSelect.innerHTML = '<option value="">-- Pilih Nama Murid Dari Kelas ' + escapeHtml(selectedClass) + ' --</option>';
+
+            filteredStudents.forEach(std => {
+                const opt = document.createElement('option');
+                opt.value = std.id;
+                opt.innerText = `${std.name} (${std.number} - Absen ${std.absen || '-'})`;
+                studentSelect.appendChild(opt);
+            });
+
+            document.getElementById('student-count-badge').innerText = `${filteredStudents.length} Murid`;
+        }
+
+        function autoFillStudentData() {
+            const selectedId = document.getElementById('student-select').value;
+            const student = spreadsheetStudents.find(s => s.id === selectedId);
+
+            if (student) {
+                document.getElementById('id-name').value = student.name;
+                document.getElementById('id-number').value = student.number;
+                document.getElementById('id-absen').value = student.absen || '';
+            }
+        }
+
+        function handleIdentitySubmit(e) {
+            e.preventDefault();
+            const chosenClass = document.getElementById('id-class').value;
+            const chosenName = document.getElementById('id-name').value.trim();
+            const chosenNumber = document.getElementById('id-number').value.trim();
+            const chosenAbsen = document.getElementById('id-absen').value.trim();
+
+            if (!chosenClass) {
+                showToast('Pilih Kelas terlebih dahulu!', 'error');
+                return;
+            }
+
+            currentStudent = {
+                name: chosenName,
+                number: chosenNumber,
+                className: chosenClass,
+                absen: chosenAbsen
+            };
+
+            document.getElementById('display-student-name').innerText = currentStudent.name;
+            document.getElementById('display-student-info').innerText = `ID/NIM: ${currentStudent.number} | ${currentStudent.className} ${currentStudent.absen ? '(Absen: ' + currentStudent.absen + ')' : ''}`;
+
+            showToast(`Identitas atas nama ${currentStudent.name} (${currentStudent.className}) tersimpan!`, 'success');
+            goToStep('task');
+        }
+
+
+        /* ----------------------------------------------------
+           2. TASK SELECTION & DYNAMIC FORM GENERATION
+           ---------------------------------------------------- */
+        function populateTaskCheckboxes() {
+            const container = document.getElementById('tasks-checkboxes-container');
+            container.innerHTML = '';
+
+            spreadsheetTasks.forEach((task) => {
+                const isChecked = selectedTaskIds.includes(task.id);
+                const card = document.createElement('label');
+                card.className = `p-3 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-2.5 ${
+                    isChecked ? 'border-sky-500 bg-sky-50/80 text-sky-950 font-medium shadow-sm' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                }`;
+
+                card.innerHTML = `
+                    <input type="checkbox" value="${task.id}" ${isChecked ? 'checked' : ''} onchange="toggleTaskSelection('${task.id}')" class="mt-0.5 w-4 h-4 rounded text-sky-600 focus:ring-sky-500">
+                    <div class="flex-grow space-y-0.5">
+                        <div class="font-bold text-xs flex items-center justify-between gap-1">
+                            <span>${escapeHtml(task.title)}</span>
+                            <span class="text-[10px] text-sky-700 bg-sky-100 px-1.5 py-0.2 rounded font-semibold shrink-0">${escapeHtml(task.subject)}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 line-clamp-1">${escapeHtml(task.description)}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('active-tasks-count-badge').innerText = `${spreadsheetTasks.length} Materi Tersedia`;
+            document.getElementById('stat-active-tasks').innerText = spreadsheetTasks.length;
+            document.getElementById('selected-tasks-count').innerText = `${selectedTaskIds.length} Materi Dipilih`;
+        }
+
+        function toggleTaskSelection(taskId) {
+            if (selectedTaskIds.includes(taskId)) {
+                if (selectedTaskIds.length === 1) {
+                    showToast('Pilih minimal 1 materi tugas yang dinilai!', 'error');
+                    populateTaskCheckboxes();
+                    return;
+                }
+                selectedTaskIds = selectedTaskIds.filter(id => id !== taskId);
+            } else {
+                selectedTaskIds.push(taskId);
+            }
+
+            populateTaskCheckboxes();
+            renderDynamicTaskForms();
+        }
+
+        // Render dynamic form block per selected task
+        function renderDynamicTaskForms() {
+            const container = document.getElementById('dynamic-task-forms-container');
+            container.innerHTML = '';
+
+            selectedTaskIds.forEach((taskId, index) => {
+                const task = spreadsheetTasks.find(t => t.id === taskId);
+                if (!task) return;
+
+                // Ensure data structure exists in taskFormData
+                if (!taskFormData[taskId]) {
+                    taskFormData[taskId] = {
+                        mediaType: 'photo',
+                        file: null,
+                        scores: { 1: 4, 2: 4, 3: 4, 4: 4 },
+                        notes: ''
+                    };
+                }
+
+                const taskState = taskFormData[taskId];
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl border-2 border-sky-100 shadow-md p-5 space-y-5 transition-all relative overflow-hidden';
+                card.id = `task-card-${taskId}`;
+
+                card.innerHTML = `
+                    <!-- Task Header Ribbon -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900 text-white -mx-5 -mt-5 p-4 rounded-t-xl">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-6 h-6 rounded-full bg-sky-500 text-slate-950 font-black text-xs flex items-center justify-center shrink-0">${index + 1}</span>
+                            <div>
+                                <h3 class="font-bold text-sm text-white">${escapeHtml(task.title)}</h3>
+                                <p class="text-[11px] text-sky-300">${escapeHtml(task.subject)}</p>
+                            </div>
+                        </div>
+                        <span class="bg-sky-500/20 text-sky-300 border border-sky-400/30 text-[10px] px-2.5 py-1 rounded-full font-bold self-start sm:self-auto">
+                            ${escapeHtml(task.description)}
+                        </span>
+                    </div>
+
+                    <!-- 1. FILE UPLOAD SECTION PER MATERIAL -->
+                    <div class="space-y-3 pt-2">
+                        <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="upload-cloud" class="w-4 h-4 text-sky-600"></i>
+                            <span>Unggah Dokumentasi Foto & / Atau Video <span class="text-red-500">*</span></span>
+                        </label>
+
+                        <!-- Media Type Toggle -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" onclick="setTaskMediaType('${taskId}', 'photo')" class="p-2.5 rounded-xl border-2 font-semibold text-xs transition-all flex items-center justify-center gap-2 ${
+                                taskState.mediaType === 'photo' ? 'border-sky-500 bg-sky-50 text-sky-700 shadow-sm' : 'border-slate-200 bg-white text-slate-600'
+                            }">
+                                <i data-lucide="image" class="w-4 h-4 text-sky-600"></i>
+                                <span>Dokumentasi Foto</span>
+                            </button>
+                            <button type="button" onclick="setTaskMediaType('${taskId}', 'video')" class="p-2.5 rounded-xl border-2 font-semibold text-xs transition-all flex items-center justify-center gap-2 ${
+                                taskState.mediaType === 'video' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm' : 'border-slate-200 bg-white text-slate-600'
+                            }">
+                                <i data-lucide="video" class="w-4 h-4 text-indigo-600"></i>
+                                <span>Video Rekaman</span>
+                            </button>
+                        </div>
+
+                        <!-- Drop Zone -->
+                        <div class="border-2 border-dashed border-slate-300 hover:border-sky-500 rounded-2xl p-5 text-center bg-slate-50/70 hover:bg-sky-50/30 transition-all cursor-pointer relative" onclick="document.getElementById('file-input-${taskId}').click()">
+                            <input type="file" id="file-input-${taskId}" accept="${taskState.mediaType === 'photo' ? 'image/*' : 'video/*'}" class="hidden" onchange="handleTaskFileSelect(event, '${taskId}')">
+                            
+                            <div id="upload-placeholder-${taskId}" class="${taskState.file ? 'hidden' : 'space-y-2'}">
+                                <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center mx-auto">
+                                    <i data-lucide="${taskState.mediaType === 'photo' ? 'image' : 'video'}" class="w-5 h-5"></i>
+                                </div>
+                                <p class="text-xs font-bold text-slate-700">Klik atau tarik file ${taskState.mediaType === 'photo' ? 'FOTO' : 'VIDEO'} ke sini</p>
+                                <p class="text-[10px] text-slate-400">Format: ${taskState.mediaType === 'photo' ? 'JPG, PNG, WEBP' : 'MP4, WEBM, MOV'} (Maks. 25 MB)</p>
+                            </div>
+
+                            <!-- Preview -->
+                            <div id="upload-preview-${taskId}" class="${taskState.file ? 'space-y-3' : 'hidden'}">
+                                <div id="media-preview-box-${taskId}" class="max-h-48 overflow-hidden rounded-xl bg-slate-950 flex items-center justify-center border border-slate-200">
+                                    <!-- Injected JS preview -->
+                                </div>
+                                <div class="flex items-center justify-between text-xs text-slate-600 bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm">
+                                    <span id="preview-filename-${taskId}" class="font-semibold truncate max-w-[220px] text-sky-800">
+                                        ${taskState.file ? escapeHtml(taskState.file.name) : ''}
+                                    </span>
+                                    <button type="button" onclick="event.stopPropagation(); removeTaskFile('${taskId}');" class="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-100 text-[11px]">
+                                        Hapus File
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. RUBRIC ASSESSMENT FORM (SKALA 1 - 4) -->
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <div>
+                            <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="clipboard-check" class="w-4 h-4 text-sky-600"></i>
+                                <span>Formulir Penilaian Mandiri / Rubrik (Skala 1 - 4)</span>
+                            </h4>
+                            <p class="text-[11px] text-slate-500 mt-0.5">
+                                <strong>Keterangan Skala:</strong> 1 = Perlu Bimbingan | 2 = Mulai Berkembang | 3 = Baik | 4 = Sangat Baik.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            ${renderRubricCriteriaItem(taskId, 1, '1. Kesesuaian Instruksi')}
+                            ${renderRubricCriteriaItem(taskId, 2, '2. Kualitas Media (Foto/Video)')}
+                            ${renderRubricCriteriaItem(taskId, 3, '3. Ketepatan Waktu & Kerapian')}
+                            ${renderRubricCriteriaItem(taskId, 4, '4. Pemahaman Materi')}
+                        </div>
+                    </div>
+
+                    <!-- 3. NOTES / FEEDBACK PER MATERIAL -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Catatan / Masukan Untuk Tugas Ini</label>
+                        <textarea id="notes-${taskId}" onchange="updateTaskNotes('${taskId}', this.value)" rows="2" placeholder="Tuliskan pesan, kendala, atau masukan mengenai tugas ini..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white focus:outline-none transition-all">${escapeHtml(taskState.notes || '')}</textarea>
+                    </div>
+                `;
+
+                container.appendChild(card);
+
+                // Render image/video preview if file exists in memory
+                if (taskState.file && taskState.file.dataUrl) {
+                    renderTaskFilePreview(taskId, taskState.file.dataUrl, taskState.mediaType);
+                }
+            });
+
+            lucide.createIcons();
+        }
+
+        // Helper to render individual Rubric Criteria item with updated labels (1: Perlu Bimbingan - 4: Sangat Baik)
+        function renderRubricCriteriaItem(taskId, critNum, title) {
+            const currentVal = taskFormData[taskId] ? taskFormData[taskId].scores[critNum] : 4;
+            return `
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-1.5">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-700">${title}</span>
+                        <span id="score-label-${taskId}-${critNum}" class="font-extrabold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200 text-[11px]">
+                            ${RUBRIC_SCALE_LABELS[currentVal]}
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-1 pt-1">
+                        ${[1, 2, 3, 4].map(s => `
+                            <button type="button" onclick="setTaskScore('${taskId}', ${critNum}, ${s})" class="score-btn-${taskId}-${critNum} border rounded-lg py-1.5 text-xs font-bold transition-all ${
+                                currentVal === s ? 'bg-sky-600 text-white shadow-sm border-sky-600' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                            }">
+                                ${s}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function setTaskMediaType(taskId, mediaType) {
+            if (!taskFormData[taskId]) return;
+            taskFormData[taskId].mediaType = mediaType;
+            taskFormData[taskId].file = null; // reset file on type switch
+            renderDynamicTaskForms();
+        }
+
+        function handleTaskFileSelect(e, taskId) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const dataUrl = event.target.result;
+                taskFormData[taskId].file = {
+                    name: file.name,
+                    size: file.size,
+                    dataUrl: dataUrl
+                };
+
+                document.getElementById(`upload-placeholder-${taskId}`).classList.add('hidden');
+                document.getElementById(`upload-preview-${taskId}`).classList.remove('hidden');
+                document.getElementById(`preview-filename-${taskId}`).innerText = `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+
+                renderTaskFilePreview(taskId, dataUrl, taskFormData[taskId].mediaType);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderTaskFilePreview(taskId, dataUrl, mediaType) {
+            const box = document.getElementById(`media-preview-box-${taskId}`);
+            if (!box) return;
+            box.innerHTML = '';
+
+            if (mediaType === 'photo') {
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                img.className = 'max-h-44 object-contain rounded-lg';
+                box.appendChild(img);
+            } else {
+                const video = document.createElement('video');
+                video.src = dataUrl;
+                video.controls = true;
+                video.className = 'max-h-44 w-full rounded-lg';
+                box.appendChild(video);
+            }
+        }
+
+        function removeTaskFile(taskId) {
+            if (taskFormData[taskId]) {
+                taskFormData[taskId].file = null;
+            }
+            renderDynamicTaskForms();
+        }
+
+        function setTaskScore(taskId, critNum, score) {
+            if (!taskFormData[taskId]) return;
+            taskFormData[taskId].scores[critNum] = score;
+
+            // Update label UI
+            const labelEl = document.getElementById(`score-label-${taskId}-${critNum}`);
+            if (labelEl) {
+                labelEl.innerText = RUBRIC_SCALE_LABELS[score];
+            }
+
+            // Update button styles
+            const buttons = document.querySelectorAll(`.score-btn-${taskId}-${critNum}`);
+            buttons.forEach((btn, idx) => {
+                if (idx + 1 === score) {
+                    btn.className = `score-btn-${taskId}-${critNum} border rounded-lg py-1.5 text-xs font-bold transition-all bg-sky-600 text-white shadow-sm border-sky-600`;
+                } else {
+                    btn.className = `score-btn-${taskId}-${critNum} border rounded-lg py-1.5 text-xs font-bold transition-all bg-slate-50 text-slate-600 hover:bg-slate-100`;
+                }
+            });
+        }
+
+        function updateTaskNotes(taskId, val) {
+            if (taskFormData[taskId]) {
+                taskFormData[taskId].notes = val.trim();
+            }
+        }
+
+        /* ----------------------------------------------------
+           3. SUBMIT ALL SELECTED TASK ASSIGNMENTS
+           ---------------------------------------------------- */
+        function submitAllAssignments() {
+            if (!currentStudent.name || !currentStudent.className) {
+                showToast('Harap isi Kelas & Identitas Siswa terlebih dahulu!', 'error');
+                goToStep('identity');
+                return;
+            }
+
+            if (selectedTaskIds.length === 0) {
+                showToast('Pilih setidaknya 1 materi tugas yang dinilai!', 'error');
+                return;
+            }
+
+            // Validate that every selected task has an uploaded file
+            for (let i = 0; i < selectedTaskIds.length; i++) {
+                const id = selectedTaskIds[i];
+                const taskObj = spreadsheetTasks.find(t => t.id === id);
+                const state = taskFormData[id];
+
+                if (!state || !state.file || !state.file.dataUrl) {
+                    showToast(`File dokumentasi untuk "${taskObj ? taskObj.title : 'Tugas'}" belum diunggah!`, 'error');
+                    
+                    // Scroll into view
+                    const card = document.getElementById(`task-card-${id}`);
+                    if (card) card.scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
+            }
+
+            // Submit each selected task as a record to submissions table & webhook
+            selectedTaskIds.forEach(id => {
+                const taskObj = spreadsheetTasks.find(t => t.id === id);
+                const state = taskFormData[id];
+                const avgScore = ((state.scores[1] + state.scores[2] + state.scores[3] + state.scores[4]) / 4).toFixed(1);
+
+                const newRecord = {
+                    id: 'SUB-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+                    timestamp: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }),
+                    studentName: currentStudent.name,
+                    studentId: currentStudent.number,
+                    className: currentStudent.className,
+                    absen: currentStudent.absen || '-',
+                    taskTitle: taskObj.title,
+                    taskSubject: taskObj.subject,
+                    mediaType: state.mediaType,
+                    fileName: state.file.name,
+                    fileDataUrl: state.file.dataUrl,
+                    scores: { ...state.scores },
+                    avgScore: avgScore,
+                    notes: state.notes || '-'
+                };
+
+                submissions.unshift(newRecord);
+                sendToWebhook(newRecord);
+            });
+
+            saveSubmissions();
+            updateStats();
+
+            showToast(`${selectedTaskIds.length} Tugas materi berhasil dikirim ke Spreadsheet! Tetap Semangat! 🔥`, 'success');
+
+            // Reset form state for tasks
+            selectedTaskIds.forEach(id => {
+                taskFormData[id] = { mediaType: 'photo', file: null, scores: { 1: 4, 2: 4, 3: 4, 4: 4 }, notes: '' };
+            });
+
+            renderDynamicTaskForms();
+
+            setTimeout(() => {
+                switchTab('sheet');
+            }, 900);
+        }
+
+        /* ----------------------------------------------------
+           4. SPREADSHEET TAB & DATA MANAGEMENT
+           ---------------------------------------------------- */
+        function switchTab(tabName) {
+            if (tabName === 'sheet') {
+                document.getElementById('step-welcome').classList.add('hidden');
+                document.getElementById('step-identity').classList.add('hidden');
+                document.getElementById('step-task').classList.add('hidden');
+                document.getElementById('section-sheet').classList.remove('hidden');
+
+                document.getElementById('nav-btn-student').className = 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 text-slate-600 hover:bg-slate-100';
+                document.getElementById('nav-btn-sheet').className = 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200';
+                renderSpreadsheet();
+            }
+        }
+
+        function renderSpreadsheet() {
+            const tbody = document.getElementById('sheet-tbody');
+            const emptyState = document.getElementById('empty-state');
+            tbody.innerHTML = '';
+
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
+            const classFilter = document.getElementById('filter-class').value;
+            const mediaFilter = document.getElementById('filter-media').value;
+
+            const filtered = submissions.filter(item => {
+                const matchesSearch = item.studentName.toLowerCase().includes(searchVal) ||
+                                      item.studentId.toLowerCase().includes(searchVal) ||
+                                      item.taskTitle.toLowerCase().includes(searchVal);
+                const matchesClass = classFilter === 'ALL' || item.className === classFilter;
+                const matchesMedia = mediaFilter === 'ALL' || item.mediaType === mediaFilter;
+                return matchesSearch && matchesClass && matchesMedia;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 border-b border-slate-100 transition-colors';
+
+                const mediaBadge = item.mediaType === 'photo' 
+                    ? `<span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 w-fit mx-auto"><i data-lucide="image" class="w-3 h-3"></i> Foto</span>`
+                    : `<span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 w-fit mx-auto"><i data-lucide="video" class="w-3 h-3"></i> Video</span>`;
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center text-slate-400 font-mono text-[11px]">${index + 1}</td>
+                    <td class="py-3 px-4 text-slate-500 text-[11px]">${item.timestamp}</td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-slate-800">${escapeHtml(item.studentName)}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">ID: ${escapeHtml(item.studentId)} | ${escapeHtml(item.className)} (Absen: ${escapeHtml(item.absen)})</div>
+                    </td>
+                    <td class="py-3 px-4 max-w-[200px]">
+                        <div class="font-semibold text-slate-800 text-xs truncate" title="${escapeHtml(item.taskTitle)}">${escapeHtml(item.taskTitle)}</div>
+                        <div class="text-[10px] text-sky-600 truncate">${escapeHtml(item.taskSubject)}</div>
+                    </td>
+                    <td class="py-3 px-4 text-center">${mediaBadge}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="openMediaModal('${item.id}')" class="px-2.5 py-1 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-lg text-xs font-semibold flex items-center gap-1 mx-auto border border-sky-200 transition-all">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Pratinjau
+                        </button>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <div class="font-extrabold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 inline-block text-[11px]">
+                            Rata-rata: ${item.avgScore} / 4
+                        </div>
+                        <div class="text-[9px] text-slate-400 mt-0.5 font-mono">K1:${item.scores[1]} | K2:${item.scores[2]} | K3:${item.scores[3]} | K4:${item.scores[4]}</div>
+                    </td>
+                    <td class="py-3 px-4 text-slate-500 max-w-[140px] truncate" title="${escapeHtml(item.notes)}">${escapeHtml(item.notes)}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="deleteSubmission('${item.id}')" class="text-slate-400 hover:text-red-600 p-1 rounded transition-colors" title="Hapus Baris">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+
+            lucide.createIcons();
+            document.getElementById('badge-count').innerText = submissions.length;
+        }
+
+        function filterTable() {
+            renderSpreadsheet();
+        }
+
+        function openMediaModal(id) {
+            const item = submissions.find(s => s.id === id);
+            if (!item) return;
+
+            const modal = document.getElementById('media-modal');
+            const modalContent = document.getElementById('modal-media-content');
+
+            document.getElementById('modal-title').innerText = item.taskTitle;
+            document.getElementById('modal-student-info').innerText = `${item.studentName} (${item.studentId}) - ${item.className} (Absen: ${item.absen})`;
+            document.getElementById('modal-scores-info').innerText = `K1:${item.scores[1]} | K2:${item.scores[2]} | K3:${item.scores[3]} | K4:${item.scores[4]} (Rata-Rata: ${item.avgScore})`;
+            document.getElementById('modal-notes-info').innerText = item.notes;
+
+            const badge = document.getElementById('modal-type-badge');
+            badge.innerText = item.mediaType === 'photo' ? 'FOTO' : 'VIDEO';
+
+            modalContent.innerHTML = '';
+            if (item.mediaType === 'photo') {
+                const img = document.createElement('img');
+                img.src = item.fileDataUrl;
+                img.className = 'max-h-[340px] object-contain rounded-lg shadow';
+                modalContent.appendChild(img);
+            } else {
+                const video = document.createElement('video');
+                video.src = item.fileDataUrl;
+                video.controls = true;
+                video.autoplay = true;
+                video.className = 'max-h-[340px] w-full rounded-lg shadow';
+                modalContent.appendChild(video);
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeMediaModal() {
+            document.getElementById('modal-media-content').innerHTML = '';
+            document.getElementById('media-modal').classList.add('hidden');
+        }
+
+        /* ----------------------------------------------------
+           5. MANAGER MODALS (TASKS & STUDENTS CRUD)
+           ---------------------------------------------------- */
+        function toggleTaskManagerModal() {
+            const modal = document.getElementById('task-manager-modal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                renderTaskManagerList();
+            }
+        }
+
+        function switchManagerTab(tab) {
+            const tabTasks = document.getElementById('manager-tab-tasks');
+            const tabStudents = document.getElementById('manager-tab-students');
+            const btnTasks = document.getElementById('tab-btn-tasks');
+            const btnStudents = document.getElementById('tab-btn-students');
+
+            if (tab === 'tasks') {
+                tabTasks.classList.remove('hidden');
+                tabStudents.classList.add('hidden');
+                btnTasks.className = 'flex-1 py-3 text-center border-b-2 border-sky-600 text-sky-700 bg-white';
+                btnStudents.className = 'flex-1 py-3 text-center text-slate-500 hover:text-slate-800';
+            } else {
+                tabTasks.classList.add('hidden');
+                tabStudents.classList.remove('hidden');
+                btnStudents.className = 'flex-1 py-3 text-center border-b-2 border-emerald-600 text-emerald-700 bg-white';
+                btnTasks.className = 'flex-1 py-3 text-center text-slate-500 hover:text-slate-800';
+                renderStudentManagerList();
+            }
+        }
+
+        function renderStudentManagerList() {
+            const container = document.getElementById('students-list-container');
+            container.innerHTML = '';
+            document.getElementById('count-mgr-students').innerText = spreadsheetStudents.length;
+
+            spreadsheetStudents.forEach((std, idx) => {
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs';
+                item.innerHTML = `
+                    <div>
+                        <p class="font-bold text-slate-800">${idx + 1}. ${escapeHtml(std.name)}</p>
+                        <p class="text-slate-500 text-[11px]">ID: ${escapeHtml(std.number)} • ${escapeHtml(std.className)} (Absen: ${escapeHtml(std.absen || '-')})</p>
+                    </div>
+                    <button onclick="removeStudentFromSpreadsheet('${std.id}')" class="text-red-500 hover:text-red-700 font-semibold p-1">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function addNewStudentToSpreadsheet() {
+            const name = document.getElementById('new-std-name').value.trim();
+            const number = document.getElementById('new-std-number').value.trim();
+            const className = document.getElementById('new-std-class').value;
+            const absen = document.getElementById('new-std-absen').value.trim();
+
+            if (!name || !number) {
+                showToast('Nama dan NIM/ID murid wajib diisi!', 'error');
+                return;
+            }
+
+            const newStudent = {
+                id: 'STD-' + Date.now(),
+                name: name,
+                number: number,
+                className: className,
+                absen: absen || '-'
+            };
+
+            spreadsheetStudents.push(newStudent);
+            saveStudents();
+            renderStudentManagerList();
+
+            document.getElementById('new-std-name').value = '';
+            document.getElementById('new-std-number').value = '';
+            document.getElementById('new-std-absen').value = '';
+
+            showToast('Murid baru ditambahkan ke Spreadsheet!', 'success');
+        }
+
+        function removeStudentFromSpreadsheet(id) {
+            spreadsheetStudents = spreadsheetStudents.filter(s => s.id !== id);
+            saveStudents();
+            renderStudentManagerList();
+            showToast('Murid terhapus dari database.', 'info');
+        }
+
+        function renderTaskManagerList() {
+            const container = document.getElementById('tasks-list-container');
+            container.innerHTML = '';
+            document.getElementById('count-mgr-tasks').innerText = spreadsheetTasks.length;
+
+            spreadsheetTasks.forEach((task, index) => {
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs';
+                item.innerHTML = `
+                    <div>
+                        <p class="font-bold text-slate-800">${index + 1}. ${escapeHtml(task.title)}</p>
+                        <p class="text-slate-500 text-[11px]">${escapeHtml(task.subject)}</p>
+                    </div>
+                    <button onclick="removeTaskFromSpreadsheet('${task.id}')" class="text-red-500 hover:text-red-700 font-semibold p-1">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function addNewTaskToSpreadsheet() {
+            const title = document.getElementById('new-task-title').value.trim();
+            const subject = document.getElementById('new-task-subject').value.trim();
+            const desc = document.getElementById('new-task-desc').value.trim();
+
+            if (!title || !subject) {
+                showToast('Judul dan Mata Pelajaran wajib diisi!', 'error');
+                return;
+            }
+
+            const newTask = {
+                id: 'TSK-' + Date.now(),
+                title: title,
+                subject: subject,
+                description: desc || 'Instruksi pengerjaan tugas.'
+            };
+
+            spreadsheetTasks.push(newTask);
+            saveTasks();
+            populateTaskCheckboxes();
+            renderTaskManagerList();
+
+            document.getElementById('new-task-title').value = '';
+            document.getElementById('new-task-subject').value = '';
+            document.getElementById('new-task-desc').value = '';
+
+            showToast('Materi/Tugas baru ditambahkan ke Spreadsheet!', 'success');
+        }
+
+        function removeTaskFromSpreadsheet(taskId) {
+            spreadsheetTasks = spreadsheetTasks.filter(t => t.id !== taskId);
+            selectedTaskIds = selectedTaskIds.filter(id => id !== taskId);
+            if (selectedTaskIds.length === 0 && spreadsheetTasks.length > 0) {
+                selectedTaskIds = [spreadsheetTasks[0].id];
+            }
+            saveTasks();
+            populateTaskCheckboxes();
+            renderDynamicTaskForms();
+            renderTaskManagerList();
+            showToast('Materi terhapus dari Spreadsheet.', 'info');
+        }
+
+        /* ----------------------------------------------------
+           6. LOCAL STORAGE & WEBHOOK UTILITIES
+           ---------------------------------------------------- */
+        function saveSubmissions() {
+            try { localStorage.setItem('edusubmit_items_v3', JSON.stringify(submissions)); } catch(e) {}
+        }
+
+        function loadStoredSubmissions() {
+            const data = localStorage.getItem('edusubmit_items_v3');
+            if (data) {
+                try { submissions = JSON.parse(data); } catch(e) { submissions = []; }
+            }
+        }
+
+        function saveStudents() {
+            try { localStorage.setItem('edusubmit_students_v3', JSON.stringify(spreadsheetStudents)); } catch(e){}
+        }
+
+        function loadStoredStudents() {
+            const data = localStorage.getItem('edusubmit_students_v3');
+            if (data) {
+                try { spreadsheetStudents = JSON.parse(data); } catch(e){}
+            }
+        }
+
+        function saveTasks() {
+            try { localStorage.setItem('edusubmit_tasks_v3', JSON.stringify(spreadsheetTasks)); } catch(e) {}
+        }
+
+        function loadStoredTasks() {
+            const data = localStorage.getItem('edusubmit_tasks_v3');
+            if (data) {
+                try { spreadsheetTasks = JSON.parse(data); } catch(e) {}
+            }
+        }
+
+        function toggleWebhookModal() {
+            const modal = document.getElementById('webhook-modal');
+            if (modal) {
+                modal.classList.toggle('hidden');
+                if (!modal.classList.contains('hidden')) {
+                    loadStoredWebhookUrl();
+                }
+            }
+        }
+
+        function saveWebhookUrl() {
+            const urlInput = document.getElementById('webhook-url');
+            if (urlInput) {
+                const url = urlInput.value.trim();
+                localStorage.setItem('edusubmit_webhook_v3', url);
+                showToast('URL Google Sheets Webhook tersimpan!', 'success');
+                toggleWebhookModal();
+            }
+        }
+
+        function loadStoredWebhookUrl() {
+            const url = localStorage.getItem('edusubmit_webhook_v3') || '';
+            const urlInput = document.getElementById('webhook-url');
+            if (urlInput) {
+                urlInput.value = url;
+            }
+        }
+
+        function sendToWebhook(data) {
+            const webhookUrl = localStorage.getItem('edusubmit_webhook_v3');
+            if (!webhookUrl) return;
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).catch(err => console.error(err));
+        }
+
+        function deleteSubmission(id) {
+            submissions = submissions.filter(s => s.id !== id);
+            saveSubmissions();
+            updateStats();
+            renderSpreadsheet();
+            showToast('Baris data terhapus.', 'info');
+        }
+
+        function clearAllData() {
+            if (submissions.length === 0) return;
+            submissions = [];
+            saveSubmissions();
+            updateStats();
+            renderSpreadsheet();
+            showToast('Semua data spreadsheet dibersihkan.', 'info');
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = submissions.length;
+            document.getElementById('stat-photos').innerText = submissions.filter(s => s.mediaType === 'photo').length;
+            document.getElementById('stat-videos').innerText = submissions.filter(s => s.mediaType === 'video').length;
+        }
+
+        function loadSampleData() {
+            const mock = [
+                {
+                    id: 'SUB-MOCK-1',
+                    timestamp: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }),
+                    studentName: 'Ahmad Rizky',
+                    studentId: '20231001',
+                    className: 'Kelas 10-A',
+                    absen: '01',
+                    taskTitle: 'Tugas 2 - Video Demonstrasi Eksperimen Fisika',
+                    taskSubject: 'Fisika Dasar',
+                    mediaType: 'video',
+                    fileName: 'Video_Praktikum_Ahmad.mp4',
+                    fileDataUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                    scores: { 1: 4, 2: 4, 3: 3, 4: 4 },
+                    avgScore: '3.8',
+                    notes: 'Eksperimen berjalan lancar dengan 3x percobaan. Tetap semangat!'
+                },
+                {
+                    id: 'SUB-MOCK-2',
+                    timestamp: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }),
+                    studentName: 'Siti Nurhaliza',
+                    studentId: '20231101',
+                    className: 'Kelas 11-IPA 1',
+                    absen: '14',
+                    taskTitle: 'Tugas 3 - Poster Desain Grafis Kampanye',
+                    taskSubject: 'Desain Komunikasi Visual',
+                    mediaType: 'photo',
+                    fileName: 'Poster_Siti.jpg',
+                    fileDataUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80',
+                    scores: { 1: 4, 2: 3, 3: 4, 4: 4 },
+                    avgScore: '3.8',
+                    notes: 'Mohon masukan untuk penggunaan perpaduan warna poster.'
+                }
+            ];
+
+            submissions = [...mock, ...submissions];
+            saveSubmissions();
+            updateStats();
+            renderSpreadsheet();
+            showToast('2 Data sampel berhasil dimuat!', 'success');
+        }
+
+        function exportToCSV() {
+            if (submissions.length === 0) {
+                showToast('Tidak ada data untuk diunduh!', 'error');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "ID,Timestamp,Nama Siswa,NIM/ID,Kelas,No Absen,Nama Tugas,Mata Pelajaran,Tipe Media,File Name,Kriteria 1,Kriteria 2,Kriteria 3,Kriteria 4,Rata Rata,Catatan Siswa\n";
+
+            submissions.forEach(r => {
+                const line = [
+                    `"${r.id}"`, `"${r.timestamp}"`, `"${r.studentName}"`, `"${r.studentId}"`,
+                    `"${r.className}"`, `"${r.absen}"`, `"${r.taskTitle}"`, `"${r.taskSubject}"`,
+                    `"${r.mediaType}"`, `"${r.fileName}"`, `"${r.scores[1]}"`, `"${r.scores[2]}"`,
+                    `"${r.scores[3]}"`, `"${r.scores[4]}"`, `"${r.avgScore}"`, `"${r.notes}"`
+                ].join(",");
+                csvContent += line + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_Tugas_EduSubmit_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Spreadsheet (.CSV) berhasil diunduh!', 'success');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-red-600' : 'bg-slate-800';
+            const iconName = type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'info';
+
+            toast.className = `${bgClass} text-white px-4 py-3 rounded-xl shadow-xl text-xs font-semibold flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i> <span>${escapeHtml(message)}</span>`;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
